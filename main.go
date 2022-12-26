@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/k0kubun/pp"
 	"github.com/temphia/temphia/code/tools/repobuild"
 )
 
@@ -17,7 +18,13 @@ func main() {
 	result, err := rb.BuildAll()
 	handleErr(err)
 
-	println(result)
+	pp.Println(result)
+
+	for _, err2 := range result.ErroredItems {
+		pp.Println(err2.Error())
+
+	}
+
 }
 
 func handleErr(err error) {

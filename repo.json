@@ -6,7 +6,6 @@
       "git_url": "https://github.com/temphia-contrib/example_repo_item",
       "branch": "main",
       "build_command": "./build.sh",
-      "sub_folder": "",
       "output_folder": "output"
     }
   }
