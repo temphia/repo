@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/k0kubun/pp"
 	"github.com/temphia/repo/code"
 )
 
@@ -21,8 +20,12 @@ func main() {
 
 	fmt.Printf("Out of %d, %d built sucessfully and %d errored out \n", len(rb.Config.Items), len(rb.Outputs), len(rb.ErroredItems))
 
-	for _, err2 := range rb.ErroredItems {
-		pp.Println(err2.Error())
+	for k, err2 := range rb.ErroredItems {
+		fmt.Printf(" [ %s ] errored |> %+v ", k, err2)
+	}
+
+	for k, outFolder := range rb.Outputs {
+		fmt.Printf(" [ %s ] output |> %+v ", k, outFolder)
 	}
 
 }
