@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/k0kubun/pp"
 	"github.com/temphia/repo/code"
 )
 
@@ -22,12 +23,15 @@ func main() {
 
 	for k, err2 := range rb.ErroredItems {
 		fmt.Printf(" [ %s ] errored |> %+v ", k, err2)
+		fmt.Println(err2.Error())
 	}
 
 	for k, outFolder := range rb.Outputs {
 		fmt.Printf(" [ %s ] output |> %+v ", k, outFolder)
+
 	}
 
+	pp.Println(rb.IndexAll(false))
 }
 
 func handleErr(err error) {

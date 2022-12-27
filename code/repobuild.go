@@ -8,9 +8,14 @@ import (
 // underlying build system should generate `index.json` (which is like manifest file)
 // and other build artifacts
 type RepoBuild struct {
-	Config       *BuildConfig
+	Config *BuildConfig
+
+	// build stage states
 	ErroredItems map[string]error
 	Outputs      map[string]string
+
+	// index stage states
+	db *DB
 }
 
 func New(conf []byte) (*RepoBuild, error) {
@@ -25,6 +30,7 @@ func New(conf []byte) (*RepoBuild, error) {
 		Config:       bconf,
 		ErroredItems: make(map[string]error),
 		Outputs:      make(map[string]string),
+		db:           nil,
 	}, nil
 
 }
@@ -57,8 +63,14 @@ func (rb *RepoBuild) BuildOne(name string, zip bool) (string, error) {
 	panic("Zip not implemented")
 }
 
-func (rb *RepoBuild) IndexAll() error {
+func (rb *RepoBuild) IndexAll(ignoreOld bool) error {
+	rb.initDB(ignoreOld)
+	for k, v := range rb.Outputs {
+		err := rb.indexItem(k, v)
+		if err != nil {
+			return err
+		}
+	}
 
-	return nil
-
+	return rb.saveDB()
 }

@@ -9,7 +9,9 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/k0kubun/pp"
 	"github.com/temphia/temphia/code/core/backend/libx/xutils"
+	"github.com/tidwall/gjson"
 )
 
 func (rb *RepoBuild) buildItem(name string) (string, error) {
@@ -19,7 +21,7 @@ func (rb *RepoBuild) buildItem(name string) (string, error) {
 	item := rb.Config.Items[name]
 
 	buildPath := path.Join(rb.Config.BuildFolder, name)
-	outputPath := path.Join(rb.Config.OutputFolder, name, item.OutputFolder)
+	outputPath := path.Join(rb.Config.OutputFolder, name)
 
 	err := xutils.CreateIfNotExits(buildPath)
 	if err != nil {
@@ -53,5 +55,40 @@ func (rb *RepoBuild) buildItem(name string) (string, error) {
 		return "", err
 	}
 
-	return outputPath, CopyDirectory(buildPath, outputPath)
+	artifactFolder := path.Join(buildPath, item.OutputFolder)
+
+	pp.Println("@copying_form", artifactFolder, "->", outputPath)
+
+	return outputPath, copyBprintFiles(artifactFolder, outputPath)
+}
+
+func copyBprintFiles(artifactFolder, outputFolder string) error {
+
+	out, err := os.ReadFile(path.Join(artifactFolder, "index.json"))
+	if err != nil {
+		return err
+	}
+
+	err = CreateIfNotExists(outputFolder, 0755)
+	if err != nil {
+		return err
+	}
+
+	result := gjson.GetBytes(out, "files").Array()
+	for _, r := range result {
+		file := r.String()
+		err := Copy(
+			path.Join(artifactFolder, file),
+			path.Join(artifactFolder, file),
+		)
+		if err != nil {
+			return err
+		}
+	}
+
+	return Copy(
+		path.Join(artifactFolder, "index.json"),
+		path.Join(artifactFolder, "index.json"),
+	)
+
 }
