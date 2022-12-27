@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/k0kubun/pp"
@@ -15,14 +16,13 @@ func main() {
 	rb, err := code.New(fout)
 	handleErr(err)
 
-	result, err := rb.BuildAll()
+	err = rb.BuildAll()
 	handleErr(err)
 
-	pp.Println(result)
+	fmt.Printf("Out of %d, %d built sucessfully and %d errored out \n", len(rb.Config.Items), len(rb.Outputs), len(rb.ErroredItems))
 
-	for _, err2 := range result.ErroredItems {
+	for _, err2 := range rb.ErroredItems {
 		pp.Println(err2.Error())
-
 	}
 
 }

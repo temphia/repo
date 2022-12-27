@@ -2,22 +2,15 @@ package code
 
 import (
 	"encoding/json"
-	"errors"
-	"os"
-	"os/exec"
-	"path"
-
-	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/k0kubun/pp"
-	"github.com/temphia/temphia/code/core/backend/libx/xutils"
 )
 
 // RepoBuild is simple helper for building repo by calling underlying build system.
 // underlying build system should generate `index.json` (which is like manifest file)
 // and other build artifacts
 type RepoBuild struct {
-	config *BuildConfig
+	Config       *BuildConfig
+	ErroredItems map[string]error
+	Outputs      map[string]string
 }
 
 func New(conf []byte) (*RepoBuild, error) {
@@ -29,29 +22,26 @@ func New(conf []byte) (*RepoBuild, error) {
 	}
 
 	return &RepoBuild{
-		config: bconf,
+		Config:       bconf,
+		ErroredItems: make(map[string]error),
+		Outputs:      make(map[string]string),
 	}, nil
 
 }
 
-func (rb *RepoBuild) BuildAll() (*BuildResult, error) {
+func (rb *RepoBuild) BuildAll() error {
 
-	result := &BuildResult{
-		ErroredItems: make(map[string]error),
-		Outputs:      make(map[string]string),
-	}
-
-	for k := range rb.config.Items {
+	for k := range rb.Config.Items {
 
 		ofolder, err := rb.BuildOne(k, false)
 		if err != nil {
-			result.ErroredItems[k] = err
+			rb.ErroredItems[k] = err
 			continue
 		}
-		result.Outputs[k] = ofolder
+		rb.Outputs[k] = ofolder
 	}
 
-	return result, nil
+	return nil
 }
 
 func (rb *RepoBuild) BuildOne(name string, zip bool) (string, error) {
@@ -67,45 +57,8 @@ func (rb *RepoBuild) BuildOne(name string, zip bool) (string, error) {
 	panic("Zip not implemented")
 }
 
-func (rb *RepoBuild) buildItem(name string) (string, error) {
-	item := rb.config.Items[name]
+func (rb *RepoBuild) IndexAll() error {
 
-	buildPath := path.Join(rb.config.BuildFolder, name)
-	outputPath := path.Join(rb.config.OutputFolder, name, item.OutputFolder)
+	return nil
 
-	err := xutils.CreateIfNotExits(buildPath)
-	if err != nil {
-		return "", err
-	}
-
-	_, err = git.PlainClone(buildPath, false, &git.CloneOptions{
-		URL:           item.GitURL,
-		Progress:      os.Stdout,
-		ReferenceName: plumbing.NewBranchReferenceName(item.Branch),
-		SingleBranch:  true,
-		Depth:         1,
-	})
-
-	if err != nil {
-		if !errors.Is(git.ErrRepositoryAlreadyExists, err) {
-			return "", err
-		}
-	}
-
-	curr, _ := os.Getwd()
-
-	cmd := exec.Command(item.BuildCommand)
-
-	pp.Println("@prev", cmd)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Dir = path.Join(curr, buildPath)
-	pp.Println("@after", cmd)
-
-	err = cmd.Run()
-	if err != nil {
-		return "", err
-	}
-
-	return outputPath, CopyDirectory(buildPath, outputPath)
 }
