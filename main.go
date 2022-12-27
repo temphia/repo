@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/k0kubun/pp"
-	"github.com/temphia/temphia/code/tools/repobuild"
+	"github.com/temphia/repo/code"
 )
 
 func main() {
@@ -12,7 +12,7 @@ func main() {
 	fout, err := os.ReadFile("repo.json")
 	handleErr(err)
 
-	rb, err := repobuild.New(fout)
+	rb, err := code.New(fout)
 	handleErr(err)
 
 	result, err := rb.BuildAll()
