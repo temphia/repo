@@ -17,3 +17,10 @@ type BuildResult struct {
 	ErroredItems map[string]error
 	Outputs      map[string]string
 }
+
+// generated DB
+
+type DB struct {
+	GroupIndex map[string][]string `json:"group_index" yaml:"group_index"`
+	TagIndex   map[string][]string `json:"tag_index" yaml:"tag_index"`
+}
