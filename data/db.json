@@ -1,13 +1,20 @@
 {
-  "group_index": { "plug": ["example_repo_item"] },
-  "tag_index": {},
-  "items": {
-    "example_repo_item": {
-      "description": "This is example repo item with build file",
-      "files": ["client.js", "server.js"],
-      "name": "Example Repo Item",
-      "slug": "example_repo_item",
-      "type": "plug"
+    "group_index": {
+        "plug": [
+            "example_repo_item"
+        ]
+    },
+    "tag_index": {},
+    "items": {
+        "example_repo_item": {
+            "description": "This is example repo item with build file",
+            "files": [
+                "client.js",
+                "server.js"
+            ],
+            "name": "Example Repo Item",
+            "slug": "example_repo_item",
+            "type": "plug"
+        }
     }
-  }
 }

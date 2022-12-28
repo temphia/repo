@@ -1,6 +1,8 @@
 package code
 
 import (
+	"crypto/sha1"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"os"
@@ -20,7 +22,7 @@ func (rb *RepoBuild) buildItem(name string) (string, error) {
 
 	item := rb.Config.Items[name]
 
-	buildPath := path.Join(rb.Config.BuildFolder, name)
+	buildPath := rb.hashedBuidlPath(item.GitURL)
 	outputPath := path.Join(rb.Config.OutputFolder, name)
 
 	err := xutils.CreateIfNotExits(buildPath)
@@ -59,6 +61,13 @@ func (rb *RepoBuild) buildItem(name string) (string, error) {
 	pp.Println("@copying_form", artifactFolder, "->", outputPath)
 
 	return outputPath, copyBprintFiles(artifactFolder, outputPath)
+}
+
+func (rb *RepoBuild) hashedBuidlPath(url string) string {
+	hasher := sha1.New()
+	hasher.Write([]byte(url))
+	sha := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
+	return path.Join(rb.Config.BuildFolder, sha)
 }
 
 func copyBprintFiles(artifactFolder, outputFolder string) error {

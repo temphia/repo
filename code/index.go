@@ -66,8 +66,7 @@ func (rb *RepoBuild) initDB(ignoreOld bool) {
 }
 
 func (rb *RepoBuild) saveDB() error {
-
-	out, err := json.Marshal(rb.db)
+	out, err := json.MarshalIndent(rb.db, "", "    ")
 	if err != nil {
 		return err
 	}
