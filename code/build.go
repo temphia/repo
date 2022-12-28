@@ -43,14 +43,13 @@ func (rb *RepoBuild) buildItem(name string) (string, error) {
 	}
 
 	curr, _ := os.Getwd()
-
+	os.Chdir(path.Join(curr, buildPath))
 	cmd := exec.Command(item.BuildCommand)
-
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.Dir = path.Join(curr, buildPath)
 
 	err = cmd.Run()
+	os.Chdir(curr)
 	if err != nil {
 		return "", err
 	}
@@ -76,10 +75,11 @@ func copyBprintFiles(artifactFolder, outputFolder string) error {
 
 	result := gjson.GetBytes(out, "files").Array()
 	for _, r := range result {
+		fmt.Println("@copying file ", r)
 		file := r.String()
 		err := Copy(
 			path.Join(artifactFolder, file),
-			path.Join(artifactFolder, file),
+			path.Join(outputFolder, file),
 		)
 		if err != nil {
 			return err
@@ -88,7 +88,7 @@ func copyBprintFiles(artifactFolder, outputFolder string) error {
 
 	return Copy(
 		path.Join(artifactFolder, "index.json"),
-		path.Join(artifactFolder, "index.json"),
+		path.Join(outputFolder, "index.json"),
 	)
 
 }

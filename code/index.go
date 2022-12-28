@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"os"
 	"path"
+
+	"github.com/tidwall/gjson"
 )
 
 func (rb *RepoBuild) indexItem(name, folder string) error {
@@ -13,14 +15,7 @@ func (rb *RepoBuild) indexItem(name, folder string) error {
 		return err
 	}
 
-	manifest := make(map[string]any)
-
-	err = json.Unmarshal(out, &manifest)
-	if err != nil {
-		return err
-	}
-
-	gtype := manifest["group"].(string)
+	gtype := gjson.GetBytes(out, "type").String()
 
 	groups, ok := rb.db.GroupIndex[gtype]
 	if !ok {
