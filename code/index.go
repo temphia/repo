@@ -2,6 +2,7 @@ package code
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path"
 
@@ -15,6 +16,11 @@ func (rb *RepoBuild) indexItem(name, folder string) error {
 		return err
 	}
 
+	slug := gjson.GetBytes(out, "slug").String()
+	if slug != name {
+		return fmt.Errorf("err: slug mismatch expected %s, got %s", name, slug)
+	}
+
 	gtype := gjson.GetBytes(out, "type").String()
 
 	groups, ok := rb.db.GroupIndex[gtype]
@@ -23,6 +29,15 @@ func (rb *RepoBuild) indexItem(name, folder string) error {
 	}
 
 	rb.db.GroupIndex[gtype] = groups
+
+	data := make(map[string]any)
+
+	err = json.Unmarshal(out, &data)
+	if err != nil {
+		return err
+	}
+
+	rb.db.Items[name] = data
 
 	// fixme => also index tags
 
@@ -34,6 +49,7 @@ func (rb *RepoBuild) initDB(ignoreOld bool) {
 		rb.db = &DB{
 			GroupIndex: make(map[string][]string),
 			TagIndex:   make(map[string][]string),
+			Items:      make(map[string]map[string]any),
 		}
 
 		if !ignoreOld {

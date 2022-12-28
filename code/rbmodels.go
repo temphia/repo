@@ -21,6 +21,7 @@ type BuildResult struct {
 // generated DB
 
 type DB struct {
-	GroupIndex map[string][]string `json:"group_index" yaml:"group_index"`
-	TagIndex   map[string][]string `json:"tag_index" yaml:"tag_index"`
+	GroupIndex map[string][]string       `json:"group_index" yaml:"group_index"`
+	TagIndex   map[string][]string       `json:"tag_index" yaml:"tag_index"`
+	Items      map[string]map[string]any `json:"items" yaml:"items"`
 }
