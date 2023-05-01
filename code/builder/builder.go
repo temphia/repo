@@ -1,12 +1,37 @@
-package code
+package builder
 
 import (
-	"encoding/json"
+	"github.com/k0kubun/pp"
+	"github.com/temphia/repo/code/models"
 )
 
-// RepoBuild is simple helper for building repo by calling underlying build system.
-// underlying build system should generate `index.json` (which is like manifest file)
-// and other build artifacts
+type RepoBuilder struct {
+	config *models.BuildConfig
+}
+
+func New(conf *models.BuildConfig) *RepoBuilder {
+	return &RepoBuilder{
+		config: conf,
+	}
+}
+
+func (rb *RepoBuilder) Build() error {
+
+	for _, ri := range rb.config.Items {
+		pp.Println(ri)
+	}
+
+	return nil
+}
+
+func (rb *RepoBuilder) buildItem() error {
+
+	return nil
+}
+
+/*
+
+
 type RepoBuild struct {
 	Config *BuildConfig
 
@@ -74,3 +99,6 @@ func (rb *RepoBuild) IndexAll(ignoreOld bool) error {
 
 	return rb.saveDB()
 }
+
+
+*/
