@@ -1,30 +1,41 @@
 package builder
 
 import (
-	"github.com/k0kubun/pp"
+	"github.com/temphia/repo/pkg/index"
 	"github.com/temphia/repo/pkg/models"
 )
 
 type RepoBuilder struct {
 	config *models.BuildConfig
+
+	// build stage states
+	ErroredItems map[string]error
+	Outputs      map[string]string
+
+	// index stage states
+	indexer *index.Indexer
 }
 
 func New(conf *models.BuildConfig) *RepoBuilder {
 	return &RepoBuilder{
-		config: conf,
+		config:       conf,
+		indexer:      index.New("conf.BuildFolder/fime"),
+		ErroredItems: make(map[string]error),
+		Outputs:      make(map[string]string),
 	}
 }
 
 func (rb *RepoBuilder) Build() error {
 
-	for _, ri := range rb.config.Items {
-		pp.Println(ri)
+	for k := range rb.config.Items {
+
+		ofolder, err := rb.buildItem(k)
+		if err != nil {
+			rb.ErroredItems[k] = err
+			continue
+		}
+		rb.Outputs[k] = ofolder
 	}
-
-	return nil
-}
-
-func (rb *RepoBuilder) buildItem() error {
 
 	return nil
 }
