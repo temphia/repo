@@ -5,11 +5,9 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/k0kubun/pp"
 	"github.com/temphia/repo/pkg/utils"
 )
 
@@ -20,7 +18,6 @@ func (rb *RepoBuilder) buildItem(name string) (string, error) {
 	item := rb.config.Items[name]
 
 	buildPath := rb.hashedBuidlPath(item.GitURL)
-	outputPath := path.Join(rb.config.OutputFolder, name)
 
 	err := utils.CreateIfNotExists(buildPath, 0755)
 	if err != nil {
@@ -41,22 +38,44 @@ func (rb *RepoBuilder) buildItem(name string) (string, error) {
 		}
 	}
 
-	curr, _ := os.Getwd()
-	os.Chdir(path.Join(curr, buildPath))
-	cmd := exec.Command(item.BuildCMD)
+	err = rb.runBuild(buildPath, item.BuildCMD)
+	if err != nil {
+		panic(err)
+	}
+
+	// 	artifactFolder := path.Join(buildPath, item.Output)
+
+	// outputPath := path.Join(rb.config.OutputFolder, name)
+
+	// pp.Println("@copying_form", artifactFolder, "->", outputPath)
+
+	//return outputPath, copyBprintFiles(artifactFolder, outputPath)
+
+	return "", nil
+
+}
+
+func (rb *RepoBuilder) runBuild(workFolder, buildcmd string) error {
+
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+
+	vol := fmt.Sprintf("%s/%s:/work", wd, workFolder)
+
+	cmd := exec.Command(
+		"docker",
+		"run",
+		"-it",
+		"-v",
+		vol,
+		"ghcr.io/temphia/temphia_buildpack:latest",
+		buildcmd,
+	)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	err = cmd.Run()
-	os.Chdir(curr)
-	if err != nil {
-		return "", err
-	}
-
-	artifactFolder := path.Join(buildPath, item.Output)
-
-	pp.Println("@copying_form", artifactFolder, "->", outputPath)
-
-	return outputPath, copyBprintFiles(artifactFolder, outputPath)
+	return cmd.Run()
 
 }
