@@ -1,8 +1,13 @@
 # running locally in act
 # act workflow_dispatch -W .github/workflows/build.yaml
 
-on: [workflow_dispatch]
-
+on:
+  workflow_dispatch:
+    inputs:
+      repo_item:
+        description: 'single repo to build'
+        required: false
+        type: string
 
 jobs:
   android_build:
@@ -17,4 +22,4 @@ jobs:
       
       - name: build packages
         run: |
-          go run .
+          go run . ${{ inputs.repo_item }}
