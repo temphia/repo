@@ -1,9 +1,7 @@
 package main
 
-import "github.com/k0kubun/pp"
+import "github.com/temphia/repo/cmd"
 
 func main() {
-
-	pp.Println()
-
+	cmd.Run()
 }
