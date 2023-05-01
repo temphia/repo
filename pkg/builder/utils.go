@@ -5,7 +5,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/temphia/repo/code/utils"
+	"github.com/temphia/repo/pkg/utils"
 	"github.com/tidwall/gjson"
 )
 

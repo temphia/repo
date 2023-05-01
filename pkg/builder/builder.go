@@ -2,7 +2,7 @@ package builder
 
 import (
 	"github.com/k0kubun/pp"
-	"github.com/temphia/repo/code/models"
+	"github.com/temphia/repo/pkg/models"
 )
 
 type RepoBuilder struct {
