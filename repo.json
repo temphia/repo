@@ -5,8 +5,8 @@
     "example_repo_item": {
       "git_url": "https://github.com/temphia-contrib/example_repo_item",
       "branch": "main",
-      "build_command": "./build.sh",
-      "output_folder": "output"
+      "build_cmd": "./build.sh",
+      "bprint_file": "./bprint.yaml"
     }
   }
 }

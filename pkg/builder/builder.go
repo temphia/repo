@@ -1,6 +1,9 @@
 package builder
 
 import (
+	"os"
+
+	"github.com/go-git/go-git/v5"
 	"github.com/temphia/repo/pkg/index"
 	"github.com/temphia/repo/pkg/models"
 )
@@ -14,6 +17,8 @@ type RepoBuilder struct {
 
 	// index stage states
 	indexer *index.Indexer
+
+	repoCache map[string]*git.Repository
 }
 
 func New(conf *models.BuildConfig) *RepoBuilder {
@@ -22,10 +27,13 @@ func New(conf *models.BuildConfig) *RepoBuilder {
 		indexer:      index.New("conf.BuildFolder/fime"),
 		ErroredItems: make(map[string]error),
 		Outputs:      make(map[string]string),
+		repoCache:    make(map[string]*git.Repository),
 	}
 }
 
 func (rb *RepoBuilder) Build() error {
+
+	os.RemoveAll(rb.config.BuildFolder)
 
 	for k := range rb.config.Items {
 

@@ -5,10 +5,14 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/temphia/repo/pkg/utils"
+	"github.com/temphia/temphia/code/backend/xtypes/service/repox/xbprint"
+	"github.com/temphia/temphia/code/tools/bdev"
+	"gopkg.in/yaml.v2"
 )
 
 func (rb *RepoBuilder) buildItem(name string) (string, error) {
@@ -24,7 +28,7 @@ func (rb *RepoBuilder) buildItem(name string) (string, error) {
 		return "", err
 	}
 
-	_, err = git.PlainClone(buildPath, false, &git.CloneOptions{
+	repo, err := git.PlainClone(buildPath, false, &git.CloneOptions{
 		URL:           item.GitURL,
 		Progress:      os.Stdout,
 		ReferenceName: plumbing.NewBranchReferenceName(item.Branch),
@@ -38,18 +42,28 @@ func (rb *RepoBuilder) buildItem(name string) (string, error) {
 		}
 	}
 
+	if repo != nil {
+		rb.repoCache[buildPath] = repo
+	} else {
+		repo = rb.repoCache[buildPath]
+	}
+
+	headRef, err := repo.Head()
+	if err != nil {
+		panic(err)
+	}
+
+	versionHash := headRef.String()[:7]
+
 	err = rb.runBuild(buildPath, item.BuildCMD)
 	if err != nil {
 		panic(err)
 	}
 
-	// 	artifactFolder := path.Join(buildPath, item.Output)
-
-	// outputPath := path.Join(rb.config.OutputFolder, name)
-
-	// pp.Println("@copying_form", artifactFolder, "->", outputPath)
-
-	//return outputPath, copyBprintFiles(artifactFolder, outputPath)
+	err = rb.copyArtifact(buildPath, name, item.BprintFile, versionHash)
+	if err != nil {
+		return "", err
+	}
 
 	return "", nil
 
@@ -67,7 +81,7 @@ func (rb *RepoBuilder) runBuild(workFolder, buildcmd string) error {
 	cmd := exec.Command(
 		"docker",
 		"run",
-		"-it",
+		"--rm",
 		"-v",
 		vol,
 		"ghcr.io/temphia/temphia_buildpack:latest",
@@ -78,4 +92,18 @@ func (rb *RepoBuilder) runBuild(workFolder, buildcmd string) error {
 
 	return cmd.Run()
 
+}
+
+func (rb *RepoBuilder) copyArtifact(basePath, name, bprintFile, version string) error {
+	out, err := os.ReadFile(path.Join(basePath, bprintFile))
+	if err != nil {
+		return err
+	}
+
+	lbprint := &xbprint.LocalBprint{}
+	err = yaml.Unmarshal(out, lbprint)
+	if err != nil {
+		return err
+	}
+	return bdev.ZipIt(lbprint, path.Join(rb.config.OutputFolder, fmt.Sprintf("%s_%s.zip", name, version)))
 }

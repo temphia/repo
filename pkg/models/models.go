@@ -1,10 +1,10 @@
 package models
 
 type RepoItem struct {
-	GitURL   string `json:"git_url,omitempty" yaml:"git_url,omitempty"`
-	Branch   string `json:"branch,omitempty" yaml:"branch,omitempty"`
-	BuildCMD string `json:"build_cmd,omitempty" yaml:"build_cmd,omitempty"`
-	Output   string `json:"output,omitempty" yaml:"output,omitempty"`
+	GitURL     string `json:"git_url,omitempty" yaml:"git_url,omitempty"`
+	Branch     string `json:"branch,omitempty" yaml:"branch,omitempty"`
+	BuildCMD   string `json:"build_cmd,omitempty" yaml:"build_cmd,omitempty"`
+	BprintFile string `json:"bprint_file,omitempty" yaml:"bprint_file,omitempty"`
 }
 
 type BuildConfig struct {
