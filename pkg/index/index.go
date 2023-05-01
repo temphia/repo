@@ -22,7 +22,7 @@ func New(file string) *Indexer {
 		Items:      make(map[string]map[string]any),
 	}
 
-	fout, err := os.ReadFile(path.Join(file, "db.json"))
+	fout, err := os.ReadFile(file)
 	if err == nil {
 		err := json.Unmarshal(fout, db)
 		if err != nil {
@@ -77,7 +77,7 @@ func (dbi *Indexer) Save() error {
 		return err
 	}
 
-	return os.WriteFile(path.Join(dbi.file, "db.json"), out, 0755)
+	return os.WriteFile(dbi.file, out, 0755)
 }
 
 type DB struct {
