@@ -110,7 +110,7 @@ func (rb *RepoBuilder) gitClone(path, url, branch string) (string, error) {
 		panic(err)
 	}
 
-	return headRef.String()[:7], nil
+	return headRef.String()[:12], nil
 }
 
 func (rb *RepoBuilder) copyArtifact(basePath, name, bprintFile, version string) error {

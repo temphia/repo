@@ -53,7 +53,9 @@ func (dbi *Indexer) UpdateItemIndex(bprint *xbprint.LocalBprint, alias, version 
 		versions = old.Versions
 	}
 
-	versions = append(versions, version)
+	if !funk.ContainsString(versions, version) {
+		versions = append(versions, version)
+	}
 
 	item := repox.BPrint{
 		Name:        bprint.Name,

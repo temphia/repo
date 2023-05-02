@@ -12,7 +12,7 @@
             "type": "plug",
             "description": "This is example repo item with build file for testing build system",
             "versions": [
-                "c502984"
+                "c50298445e4e"
             ]
         }
     }
