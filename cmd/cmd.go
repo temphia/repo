@@ -1,11 +1,11 @@
 package cmd
 
 import (
-	"encoding/json"
 	"os"
 
 	"github.com/temphia/repo/pkg/builder"
 	"github.com/temphia/repo/pkg/models"
+	"gopkg.in/yaml.v2"
 )
 
 type Options struct {
@@ -20,7 +20,7 @@ func Run(opts *Options) {
 	}
 
 	conf := &models.BuildConfig{}
-	err = json.Unmarshal(cbytes, conf)
+	err = yaml.Unmarshal(cbytes, conf)
 	if err != nil {
 		panic(err)
 	}
