@@ -6,7 +6,8 @@ require (
 	github.com/go-git/go-git/v5 v5.6.1
 	github.com/k0kubun/pp v3.0.1+incompatible
 	github.com/temphia/temphia v0.0.0-20230429105436-e9977e49aee1
-	github.com/tidwall/gjson v1.14.4
+	github.com/thoas/go-funk v0.9.2
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
@@ -36,6 +37,7 @@ require (
 	github.com/rs/xid v1.4.0 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/skeema/knownhosts v1.1.0 // indirect
+	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/upper/db/v4 v4.5.4 // indirect
@@ -45,5 +47,4 @@ require (
 	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

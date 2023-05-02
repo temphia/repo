@@ -8,6 +8,7 @@ import (
 	"github.com/k0kubun/pp"
 	"github.com/temphia/repo/pkg/index"
 	"github.com/temphia/repo/pkg/models"
+	"github.com/temphia/temphia/code/backend/xtypes/service/repox/xbprint"
 )
 
 type RepoBuilder struct {
@@ -20,17 +21,19 @@ type RepoBuilder struct {
 	// index stage states
 	indexer *index.Indexer
 
-	repoCache map[string]*git.Repository
+	repoCache      map[string]*git.Repository
+	bprintFileCace map[string]*xbprint.LocalBprint
 }
 
 func New(conf *models.BuildConfig) *RepoBuilder {
 
 	return &RepoBuilder{
-		config:       conf,
-		indexer:      index.New(path.Join(conf.OutputFolder, "db.json")),
-		erroredItems: make(map[string]error),
-		outputs:      make(map[string]string),
-		repoCache:    make(map[string]*git.Repository),
+		config:         conf,
+		indexer:        index.New(path.Join(conf.OutputFolder, "db.json")),
+		erroredItems:   make(map[string]error),
+		outputs:        make(map[string]string),
+		repoCache:      make(map[string]*git.Repository),
+		bprintFileCace: make(map[string]*xbprint.LocalBprint),
 	}
 }
 
@@ -48,7 +51,7 @@ func (rb *RepoBuilder) Build() error {
 		rb.outputs[k] = ofolder
 	}
 
-	return nil
+	return rb.indexer.Save()
 }
 
 func (rb *RepoBuilder) PrintResult() {

@@ -42,9 +42,17 @@ func (rb *RepoBuilder) buildItem(name string) (string, error) {
 		return "", err
 	}
 
-	return "", nil
+	// update index
 
+	err = rb.updateIndex(name, versionHash)
+	if err != nil {
+		return "", nil
+	}
+
+	return versionHash, nil
 }
+
+// private
 
 func (rb *RepoBuilder) runBuild(workFolder, buildcmd string) error {
 
@@ -111,13 +119,13 @@ func (rb *RepoBuilder) copyArtifact(basePath, name, bprintFile, version string) 
 		return err
 	}
 
-	pp.Println(string(out))
-
 	lbprint := &xbprint.LocalBprint{}
 	err = yaml.Unmarshal(out, lbprint)
 	if err != nil {
 		return err
 	}
+
+	rb.bprintFileCace[name] = lbprint
 
 	filename := fmt.Sprintf("%s_%s.zip", name, version)
 
@@ -157,4 +165,9 @@ func (rb *RepoBuilder) copyArtifact(basePath, name, bprintFile, version string) 
 	}
 
 	return nil
+}
+
+func (rb *RepoBuilder) updateIndex(name, version string) error {
+	item := rb.bprintFileCace[name]
+	return rb.indexer.UpdateItemIndex(item, name, version)
 }

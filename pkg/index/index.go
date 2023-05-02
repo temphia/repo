@@ -2,11 +2,11 @@ package index
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
-	"path"
 
-	"github.com/tidwall/gjson"
+	"github.com/temphia/temphia/code/backend/xtypes/service/repox"
+	"github.com/temphia/temphia/code/backend/xtypes/service/repox/xbprint"
+	"github.com/thoas/go-funk"
 )
 
 type Indexer struct {
@@ -19,7 +19,7 @@ func New(file string) *Indexer {
 	db := &DB{
 		GroupIndex: make(map[string][]string),
 		TagIndex:   make(map[string][]string),
-		Items:      make(map[string]map[string]any),
+		Items:      make(map[string]repox.BPrint),
 	}
 
 	fout, err := os.ReadFile(file)
@@ -36,35 +36,37 @@ func New(file string) *Indexer {
 	}
 }
 
-func (dbi *Indexer) IndexItem(name, folder string) error {
+func (dbi *Indexer) UpdateItemIndex(bprint *xbprint.LocalBprint, alias, version string) error {
 
-	out, err := os.ReadFile(path.Join(folder, "index.json"))
-	if err != nil {
-		return err
-	}
-
-	slug := gjson.GetBytes(out, "slug").String()
-	if slug != name {
-		return fmt.Errorf("err: slug mismatch expected %s, got %s", name, slug)
-	}
-
-	gtype := gjson.GetBytes(out, "type").String()
-
-	groups, ok := dbi.db.GroupIndex[gtype]
+	typeEntries, ok := dbi.db.GroupIndex[bprint.Type]
 	if !ok {
-		groups = []string{name}
+		typeEntries = make([]string, 0)
 	}
 
-	dbi.db.GroupIndex[gtype] = groups
-
-	data := make(map[string]any)
-
-	err = json.Unmarshal(out, &data)
-	if err != nil {
-		return err
+	if !funk.ContainsString(typeEntries, alias) {
+		dbi.db.GroupIndex[bprint.Type] = append(typeEntries, alias)
 	}
 
-	dbi.db.Items[name] = data
+	versions := []string{}
+	old, ok := dbi.db.Items[alias]
+	if ok {
+		versions = old.Versions
+	}
+
+	versions = append(versions, version)
+
+	item := repox.BPrint{
+		Name:        bprint.Name,
+		Slug:        bprint.Slug,
+		Type:        bprint.Type,
+		SubType:     "", // fixme
+		Description: bprint.Description,
+		Icon:        bprint.Icon,
+		Versions:    versions,
+		Tags:        bprint.Tags,
+	}
+
+	dbi.db.Items[alias] = item
 
 	// fixme => also index tags
 
@@ -81,7 +83,7 @@ func (dbi *Indexer) Save() error {
 }
 
 type DB struct {
-	GroupIndex map[string][]string       `json:"group_index" yaml:"group_index"`
-	TagIndex   map[string][]string       `json:"tag_index" yaml:"tag_index"`
-	Items      map[string]map[string]any `json:"items" yaml:"items"`
+	GroupIndex map[string][]string     `json:"group_index" yaml:"group_index"`
+	TagIndex   map[string][]string     `json:"tag_index" yaml:"tag_index"`
+	Items      map[string]repox.BPrint `json:"items" yaml:"items"`
 }
