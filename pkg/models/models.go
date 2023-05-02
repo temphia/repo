@@ -12,14 +12,3 @@ type BuildConfig struct {
 	BuildFolder  string              `json:"build_folder,omitempty" yaml:"build_folder,omitempty"`
 	OutputFolder string              `json:"output_folder,omitempty" yaml:"output_folder,omitempty"`
 }
-
-type Bprint struct {
-	Name        string         `yaml:"name,omitempty"`
-	Slug        string         `yaml:"slug,omitempty"`
-	Type        string         `yaml:"type,omitempty"`
-	Description string         `yaml:"description,omitempty"`
-	Icon        string         `yaml:"icon,omitempty"`
-	Version     []string       `yaml:"versions,omitempty"`
-	Tags        []string       `yaml:"tags,omitempty"`
-	ExtraMeta   map[string]any `yaml:"extra_meta,omitempty"`
-}
