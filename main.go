@@ -1,9 +1,12 @@
 package main
 
-import "github.com/temphia/repo/cmd"
+import (
+	"github.com/k0kubun/pp"
+	rcmd "github.com/temphia/temphia/code/tools/repobuild/cmd"
+)
 
 func main() {
-	cmd.Run(&cmd.Options{
-		RepoFile: ".repo.yaml",
-	})
+
+	pp.Println(rcmd.Run(".repo.yaml"))
+
 }
