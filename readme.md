@@ -1,3 +1,3 @@
 # repo
 
-repo is a temphia repository. it is built bashed on `repo.json` file using go code in `main.go`.
+The repo is a Temphia repository built using the `repo.yaml` file and repobuild. It uses the [buildpack](https://github.com/temphia/temphia_buildpack_docker) in Docker to run the build step for each repo item.
