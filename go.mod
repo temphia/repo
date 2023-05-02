@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/k0kubun/pp v3.0.1+incompatible
-	github.com/temphia/temphia v0.0.0-20230502152652-1614a077550c
+	github.com/temphia/temphia v0.0.0-20230502165946-2fda835e336e
 
 )
 
