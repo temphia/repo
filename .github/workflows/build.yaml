@@ -27,6 +27,7 @@ jobs:
       
       - name: Commit repo build output
         run: |
+          git add .
           git config --global user.name 'bornjre'
           git config --global user.email 'bornjre@users.noreply.github.com'
           git commit -am "##  ${{ inputs.github.run_id }} # ${{ inputs.repo_item }}"
