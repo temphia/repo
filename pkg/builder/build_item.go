@@ -24,45 +24,19 @@ func (rb *RepoBuilder) buildItem(name string) (string, error) {
 
 	buildPath := rb.hashedBuidlPath(item.GitURL)
 
-	err := utils.CreateIfNotExists(buildPath, 0755)
+	// clone repo
+	versionHash, err := rb.gitClone(buildPath, item.GitURL, item.Branch)
 	if err != nil {
 		return "", err
 	}
 
-	repo, err := git.PlainClone(buildPath, false, &git.CloneOptions{
-		URL:           item.GitURL,
-		Progress:      os.Stdout,
-		ReferenceName: plumbing.NewBranchReferenceName(item.Branch),
-		SingleBranch:  true,
-		Depth:         1,
-	})
-
-	if err != nil {
-		if !errors.Is(git.ErrRepositoryAlreadyExists, err) {
-			return "", err
-		}
-	}
-
-	if repo != nil {
-		rb.repoCache[buildPath] = repo
-	} else {
-		repo = rb.repoCache[buildPath]
-	}
-
-	headRef, err := repo.Head()
-	if err != nil {
-		panic(err)
-	}
-
-	versionHash := headRef.String()[:7]
-
+	// actual build
 	err = rb.runBuild(buildPath, item.BuildCMD)
 	if err != nil {
 		panic(err)
 	}
 
-	pp.Println("@before_copy_artifact")
-
+	// copy artifacts
 	err = rb.copyArtifact(buildPath, name, item.BprintFile, versionHash)
 	if err != nil {
 		return "", err
@@ -95,6 +69,40 @@ func (rb *RepoBuilder) runBuild(workFolder, buildcmd string) error {
 
 	return cmd.Run()
 
+}
+
+func (rb *RepoBuilder) gitClone(path, url, branch string) (string, error) {
+	err := utils.CreateIfNotExists(path, 0755)
+	if err != nil {
+		return "", err
+	}
+
+	repo, err := git.PlainClone(path, false, &git.CloneOptions{
+		URL:           url,
+		Progress:      os.Stdout,
+		ReferenceName: plumbing.NewBranchReferenceName(branch),
+		SingleBranch:  true,
+		Depth:         1,
+	})
+
+	if err != nil {
+		if !errors.Is(git.ErrRepositoryAlreadyExists, err) {
+			return "", err
+		}
+	}
+
+	if repo != nil {
+		rb.repoCache[path] = repo
+	} else {
+		repo = rb.repoCache[path]
+	}
+
+	headRef, err := repo.Head()
+	if err != nil {
+		panic(err)
+	}
+
+	return headRef.String()[:7], nil
 }
 
 func (rb *RepoBuilder) copyArtifact(basePath, name, bprintFile, version string) error {
