@@ -7,14 +7,13 @@
     "tag_index": {},
     "items": {
         "example_repo_item": {
-            "description": "This is example repo item with build file",
-            "files": [
-                "client.js",
-                "server.js"
-            ],
             "name": "Example Repo Item",
             "slug": "example_repo_item",
-            "type": "plug"
+            "type": "plug",
+            "description": "This is example repo item with build file for testing build system",
+            "versions": [
+                "c50298445e4e"
+            ]
         }
     }
 }
