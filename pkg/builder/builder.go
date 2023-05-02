@@ -14,8 +14,8 @@ type RepoBuilder struct {
 	config *models.BuildConfig
 
 	// build stage states
-	ErroredItems map[string]error
-	Outputs      map[string]string
+	erroredItems map[string]error
+	outputs      map[string]string
 
 	// index stage states
 	indexer *index.Indexer
@@ -28,8 +28,8 @@ func New(conf *models.BuildConfig) *RepoBuilder {
 	return &RepoBuilder{
 		config:       conf,
 		indexer:      index.New(path.Join(conf.OutputFolder, "db.json")),
-		ErroredItems: make(map[string]error),
-		Outputs:      make(map[string]string),
+		erroredItems: make(map[string]error),
+		outputs:      make(map[string]string),
 		repoCache:    make(map[string]*git.Repository),
 	}
 }
@@ -42,21 +42,21 @@ func (rb *RepoBuilder) Build() error {
 
 		ofolder, err := rb.buildItem(k)
 		if err != nil {
-			rb.ErroredItems[k] = err
+			rb.erroredItems[k] = err
 			continue
 		}
-		rb.Outputs[k] = ofolder
+		rb.outputs[k] = ofolder
 	}
 
 	return nil
 }
 
 func (rb *RepoBuilder) PrintResult() {
-	for k, err := range rb.ErroredItems {
+	for k, err := range rb.erroredItems {
 		pp.Println("@err", k, err)
 	}
 
-	for k, v := range rb.Outputs {
+	for k, v := range rb.outputs {
 		pp.Println("@build_ok", k, v)
 	}
 
