@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/k0kubun/pp"
 	"github.com/temphia/repo/pkg/utils"
 	"github.com/temphia/temphia/code/backend/xtypes/service/repox/xbprint"
 	"github.com/temphia/temphia/code/tools/bdev"
@@ -60,6 +61,8 @@ func (rb *RepoBuilder) buildItem(name string) (string, error) {
 		panic(err)
 	}
 
+	pp.Println("@before_copy_artifact")
+
 	err = rb.copyArtifact(buildPath, name, item.BprintFile, versionHash)
 	if err != nil {
 		return "", err
@@ -100,10 +103,50 @@ func (rb *RepoBuilder) copyArtifact(basePath, name, bprintFile, version string) 
 		return err
 	}
 
+	pp.Println(string(out))
+
 	lbprint := &xbprint.LocalBprint{}
 	err = yaml.Unmarshal(out, lbprint)
 	if err != nil {
 		return err
 	}
-	return bdev.ZipIt(lbprint, path.Join(rb.config.OutputFolder, fmt.Sprintf("%s_%s.zip", name, version)))
+
+	filename := fmt.Sprintf("%s_%s.zip", name, version)
+
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+
+	err = os.Chdir(basePath)
+	if err != nil {
+		panic(err)
+	}
+
+	defer func() {
+		os.Remove(filename)
+
+	}()
+
+	err = bdev.ZipIt(lbprint, filename)
+	os.Chdir(wd)
+
+	if err != nil {
+		return err
+	}
+
+	distpath := path.Join(rb.config.OutputFolder, name)
+
+	utils.CreateIfNotExists(distpath, 0755)
+
+	err = utils.Copy(
+		path.Join(basePath, filename),
+		path.Join(distpath, fmt.Sprintf("%s.zip", version)),
+	)
+	if err != nil {
+		pp.Println(err.Error())
+		return err
+	}
+
+	return nil
 }
