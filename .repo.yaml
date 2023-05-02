@@ -1,9 +1,23 @@
 build_folder: build
 output_folder: data
 items:
-  example_repo_item:
-    git_url: https://github.com/temphia-contrib/example_repo_item
+  eventmap:
+    git_url: https://github.com/temphia/stdapps
     branch: main
-    build_cmd: "./build.sh"
-    bprint_file: "./bprint.yaml"
-  
+    build_cmd: "make build_eventmap"
+    bprint_file: "./.temphia/eventmap/bprint.yaml"
+  freeboard:
+    git_url: https://github.com/temphia/stdapps
+    branch: main
+    build_cmd: "make build_freeboard"
+    bprint_file: "./.temphia/freeboard/bprint.yaml"
+  simpledoc:
+    git_url: https://github.com/temphia/stdapps
+    branch: main
+    build_cmd: "make build_simpledoc"
+    bprint_file: "./.temphia/simpledoc/bprint.yaml"
+  simpletasks:
+    git_url: https://github.com/temphia/stdapps
+    branch: main
+    build_cmd: "make build_simpletasks"
+    bprint_file: "./.temphia/simpletasks/bprint.yaml"
