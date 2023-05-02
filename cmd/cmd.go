@@ -4,14 +4,17 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/k0kubun/pp"
 	"github.com/temphia/repo/pkg/builder"
 	"github.com/temphia/repo/pkg/models"
 )
 
-func Run() {
+type Options struct {
+	RepoFile string
+}
 
-	cbytes, err := os.ReadFile("repo.json")
+func Run(opts *Options) {
+
+	cbytes, err := os.ReadFile(opts.RepoFile)
 	if err != nil {
 		panic(err)
 	}
@@ -24,6 +27,10 @@ func Run() {
 
 	builder := builder.New(conf)
 
-	pp.Println(builder.Build())
+	err = builder.Build()
+	if err != nil {
+		panic(err)
+	}
 
+	builder.PrintResult()
 }

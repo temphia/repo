@@ -2,8 +2,10 @@ package builder
 
 import (
 	"os"
+	"path"
 
 	"github.com/go-git/go-git/v5"
+	"github.com/k0kubun/pp"
 	"github.com/temphia/repo/pkg/index"
 	"github.com/temphia/repo/pkg/models"
 )
@@ -25,7 +27,7 @@ func New(conf *models.BuildConfig) *RepoBuilder {
 
 	return &RepoBuilder{
 		config:       conf,
-		indexer:      index.New("data/db.json"),
+		indexer:      index.New(path.Join(conf.OutputFolder, "db.json")),
 		ErroredItems: make(map[string]error),
 		Outputs:      make(map[string]string),
 		repoCache:    make(map[string]*git.Repository),
@@ -47,4 +49,15 @@ func (rb *RepoBuilder) Build() error {
 	}
 
 	return nil
+}
+
+func (rb *RepoBuilder) PrintResult() {
+	for k, err := range rb.ErroredItems {
+		pp.Println("@err", k, err)
+	}
+
+	for k, v := range rb.Outputs {
+		pp.Println("@build_ok", k, v)
+	}
+
 }
