@@ -18,7 +18,8 @@
             "type": "bundle",
             "description": "simple map of events.",
             "versions": [
-                "ee5b80591129"
+                "ee5b80591129",
+                "f210472e83a7"
             ]
         },
         "example_repo_item": {
@@ -36,7 +37,8 @@
             "type": "bundle",
             "description": "Freeboard is a canvas for your ideas.",
             "versions": [
-                "ee5b80591129"
+                "ee5b80591129",
+                "f210472e83a7"
             ]
         },
         "simpledoc": {
@@ -45,7 +47,8 @@
             "type": "bundle",
             "description": "Simple Document editor.",
             "versions": [
-                "ee5b80591129"
+                "ee5b80591129",
+                "f210472e83a7"
             ]
         },
         "simpletasks": {
@@ -54,7 +57,8 @@
             "type": "bundle",
             "description": "Simple kanban board for managing your tasks.",
             "versions": [
-                "ee5b80591129"
+                "ee5b80591129",
+                "f210472e83a7"
             ]
         }
     }
