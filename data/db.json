@@ -19,7 +19,8 @@
             "description": "simple map of events.",
             "versions": [
                 "ee5b80591129",
-                "f210472e83a7"
+                "f210472e83a7",
+                "6ff40183134f"
             ]
         },
         "example_repo_item": {
@@ -38,7 +39,8 @@
             "description": "Freeboard is a canvas for your ideas.",
             "versions": [
                 "ee5b80591129",
-                "f210472e83a7"
+                "f210472e83a7",
+                "6ff40183134f"
             ]
         },
         "simpledoc": {
@@ -48,7 +50,8 @@
             "description": "Simple Document editor.",
             "versions": [
                 "ee5b80591129",
-                "f210472e83a7"
+                "f210472e83a7",
+                "6ff40183134f"
             ]
         },
         "simpletasks": {
@@ -58,7 +61,8 @@
             "description": "Simple kanban board for managing your tasks.",
             "versions": [
                 "ee5b80591129",
-                "f210472e83a7"
+                "f210472e83a7",
+                "6ff40183134f"
             ]
         }
     }
